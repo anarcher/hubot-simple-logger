@@ -1,0 +1,25 @@
+{
+    "name" : "hubot-simple-logger",
+    "version" : "0.0.1",
+    "description" : "A logger script for hubot",
+
+    "keywords" : [
+        "hubot",
+        "log"
+    ],
+    "repository" : {
+        "type": "git",
+        "url": "https://github.com/anarcher/hubot-simple-logger.git"
+    },
+    "author" {
+        "name" : "anarcher"
+    },
+    "dependencies" : {
+        "Tempus" : "0.1.0",
+        "mkdirp" : "0.3.5",
+        "express" : "~ 3.2.0",
+        "jade" : "~0.29.0",
+        "sass" : "0.5.0"
+    }
+}
+
