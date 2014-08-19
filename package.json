@@ -13,6 +13,7 @@
     "author" : {
         "name" : "anarcher"
     },
+    "main" : "./src/scripts/hubot-simple-logger.coffee"
     "dependencies" : {
         "Tempus" : "0.1.0",
         "mkdirp" : "0.3.5",
