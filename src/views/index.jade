@@ -1,0 +1,17 @@
+extends layout
+
+block body
+  div.navigation
+    span.title #{channel}
+    = ' | '
+    span.nolink index
+    = ' | '
+    a(href='latest') latest
+
+  div.index
+    ul
+      - each date in dates
+        li
+          a(href= date) #{date}
+          - if (date == dates[0])
+            !{' (<a href="latest">latest</a>)'}

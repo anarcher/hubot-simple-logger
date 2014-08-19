@@ -1,0 +1,78 @@
+extends layout
+
+block body
+  div.navigation
+    span.title #{channel} #{page}
+    = ' | '
+    a(href='index') index
+    = ' | '
+    - if (previous)
+      a(href=previous) previous (#{previous})
+    - else
+      span.nolink previous (none)
+    = ' | '
+    - if (next)
+      a(href=next) next (#{next})
+    - else
+      span.nolink next (none)
+    = ' | '
+    - if (!isLatest)
+      a(href='latest') latest
+    - else
+      span.nolink latest
+
+  div.log
+    table.log
+      tbody
+        - each event in events
+          tr(class=event.type)
+            td.time
+              a(href='#' + event.timestamp)= event.time
+              a(name= event.timestamp, class='time-anchor')
+                - var nbsp = '&nbsp;'
+                !{nbsp}
+
+            - if (event.type == 'message')
+              td.nick= '<' + event.nick + '>'
+              td.content= event.message
+
+            - if (event.type == 'action')
+              td.nick= '* ' + event.nick
+              td.content= event.action
+
+            - if (event.type == 'topic')
+              - if (event.nick)
+                td.nick= '* ' + event.nick.replace(/!.*$/, '')
+              - else
+                td.nick
+              td.content
+                = 'topic: '
+                span.topic= event.topic
+
+            - if (event.type == 'nick')
+              td.nick= '* ' + event.nick
+              td.content
+                = 'changed nick to '
+                span.new_nick= event.new_nick
+
+            - if (event.type == 'join')
+              td.nick= '* ' + event.nick
+              td.content joined
+
+            - if (event.type == 'enter')
+              td.nick= '* ' + event.nick
+              td.content= event.text
+
+            - if (event.type == 'part' || event.type == 'quit')
+              td.nick= '* ' + event.nick
+              td.content
+                = event.type
+                - if (event.reason)
+                  span.reason= ' (' + event.reason + ')'
+
+            - if (event.type == 'kick')
+              td.nick= '* ' + event.nick
+              td.content= 'booted '
+                span.victim= event.victim
+                - if (event.reason)
+                  span.reason= ' (' + event.reason + ')'
