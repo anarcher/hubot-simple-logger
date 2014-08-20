@@ -31,7 +31,7 @@ block body
               a(name= event.timestamp, class='time-anchor')
                 - var nbsp = '&nbsp;'
                 !{nbsp}
-            - if (event.type == 'message')
+            - if (event.type == 'text')
               td.nick= '<' + event.user + '>'
               td.content= event.message
             - if (event.type == 'join')

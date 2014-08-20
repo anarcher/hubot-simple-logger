@@ -1,6 +1,6 @@
 {
     "name" : "hubot-simple-logger",
-    "version" : "0.0.4",
+    "version" : "0.0.5",
     "description" : "A logger script for hubot",
     "keywords" : [
         "hubot",
