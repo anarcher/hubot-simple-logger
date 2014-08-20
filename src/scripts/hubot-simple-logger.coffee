@@ -1,4 +1,4 @@
-{Robot, Adapter, TextMessage, EnterMessage, LeaveMessage, CatchAllMessage} = require 'hubot'
+{Robot, Adapter, Listener, TextMessage, EnterMessage, LeaveMessage, CatchAllMessage} = require 'hubot'
 express = require "express"
 fs = require "fs"
 path = require "path"
@@ -15,11 +15,11 @@ log_message = (root,date,type,channel,meta) ->
     meta.date = date
     meta.channel = channel
     meta.type = type
-    fs.appendFile log_file,JSON.stringfy(meta) + '\n',(err) ->
+    fs.appendFile log_file,JSON.stringify(meta) + '\n',(err) ->
         if err
             throw err
 
-redner_log = (req,res,channel,file,date,dates,latest) ->
+render_log = (req,res,channel,file,date,dates,latest) ->
     stream = fs.createReadStream(file,{ encoding: 'utf8' })
     buffer = ''
     events = []
@@ -84,28 +84,31 @@ escapeHTML = (str) ->
     str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 module.exports = (robot) ->
-    logs_root = process.env.HUBOT_LOGS_FOLDER || "/var/hubot/logs"
+    logs_root = process.env.HUBOT_LOGS_FOLDER || "/var/log/hubot/"
 
-    _log_message = (robot,res) ->
+    _log_message = (res) ->
         type = 'text'
-        if res.message instanceof hubot.TextMessage
+        if res.message instanceof TextMessage
             type = 'text'
-        else if res.message instanceof hubot.EnterMessage
+        else if res.message instanceof EnterMessage
             type = 'join'
-        else if res.message instanceof hubot.LeaveMessage
+        else if res.message instanceof LeaveMessage
             type = 'part'
+        else
+            return
         date = new Tempus()
         room = res.message.user.room || 'general'
-        log_message(logs_root,date,type,room,{ 'message' : res.message.text })
+        user = res.message.user.name || res.message.user.id || 'unknown'
+        log_message(logs_root,date,type,room,{ 'message' : res.message.text , 'user' : user })
 
     # Add a listener that matches all messages and calls log_message with redis and robot instances and a Response object
-    robot.listeners.push new hubot.Listener(robot, ((msg) -> return true), (res) -> _log_message(robot, res))
+    robot.listeners.push new Listener(robot, ((msg) -> return true), (res) -> _log_message(res))
 
     
     #init app
     port = process.env.LOGS_PORT || 8086
     robot.logger_app = express()
-    robot.logger_app.configre( ->
+    robot.logger_app.configure( ->
         robot.logger_app.set 'views', __dirname + '/../views'
         robot.logger_app.set 'view options', { layout: true }
         robot.logger_app.set 'view engine', 'jade'
@@ -169,4 +172,3 @@ module.exports = (robot) ->
         render_log(req, res, channel, path.resolve(logs_root, channel, date + ".txt"), date, dates, true)
 
     robot.logger_app.listen(port)
-
