@@ -5,9 +5,9 @@ block body
     ul
       - each channel in channels
         li
-          a(href= '/irclogs/' + escape(channel) + '/latest') #{channel}
+          a(href= '/logs/' + escape(channel) + '/latest') #{channel}
           = ' ('
-          a(href= '/irclogs/' + escape(channel) + '/index') index
+          a(href= '/logs/' + escape(channel) + '/index') index
           = ' | '
-          a(href= '/irclogs/' + escape(channel) + '/latest') latest
+          a(href= '/logs/' + escape(channel) + '/latest') latest
           = ')'
