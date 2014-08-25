@@ -6,6 +6,7 @@ sys = require "sys"
 util = require "util"
 Tempus = require "Tempus"
 mkdirp = require("mkdirp").sync
+Autolinker = require("autolinker")
 
 log_streams = {}
 
@@ -69,6 +70,7 @@ render_log = (req,res,channel,file,date,dates,latest) ->
         parse_events(true)
         indexPosition = dates.indexOf(date)
         res.render('log',{
+            Autolinker: Autolinker,
             events: events,
             channel: channel,
             page : date,

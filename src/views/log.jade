@@ -20,6 +20,8 @@ block body
       a(href='latest') latest
     - else
       span.nolink latest
+    = ' | '
+    a(href='/logs/') logs
 
   div.log
     table.log
@@ -42,5 +44,5 @@ block body
               td.content= 'quit'
             - if (event.type == 'topic')
               td.nick= '* '+ event.user 
-              td.content= 'topic: ' + event.message
+              td.content= 'topic: ' + Autolinker.link(event.message,{ newWindow : true })
 
