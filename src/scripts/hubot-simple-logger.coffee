@@ -1,4 +1,4 @@
-{Robot, Adapter, Listener, TextMessage, EnterMessage, LeaveMessage, CatchAllMessage} = require 'hubot'
+{Robot, Adapter, Listener, TextMessage, EnterMessage, LeaveMessage,TopicMessage, CatchAllMessage} = require 'hubot'
 express = require "express"
 fs = require "fs"
 path = require "path"
@@ -34,32 +34,32 @@ render_log = (req,res,channel,file,date,dates,latest) ->
         else
             until_row = rows.length
 
-    i = 0
+        i = 0
 
-    while i < until_row
-        json = rows[i]
-        i++
-        continue unless json?
+        while i < until_row
+            json = rows[i]
+            i++
+            continue unless json?
 
-        event = null
-        try
-            event = JSON.parse(json)
-        catch e
-            null
+            event = null
+            try
+                event = JSON.parse(json)
+            catch e
+                null
 
-        continue unless event?
+            continue unless event?
 
-        event.date = new Tempus(event.date)
-        event.time = event.date.toString("%H:%M:%S")
-        event.timestamp = event.date.toString("%H:%M:%S:%L")
-        continue unless event.date?
+            event.date = new Tempus(event.date)
+            event.time = event.date.toString("%H:%M:%S")
+            event.timestamp = event.date.toString("%H:%M:%S:%L")
+            continue unless event.date?
 
-        events.push(event)
+            events.push(event)
 
-    if !last
-        buffer = rows[rows.length - 1] || ''
-    else
-        buffer = ''
+        if !last
+            buffer = rows[rows.length - 1] || ''
+        else
+            buffer = ''
 
     stream.on 'data',(data) ->
         buffer += data
@@ -94,6 +94,8 @@ module.exports = (robot) ->
             type = 'join'
         else if res.message instanceof LeaveMessage
             type = 'part'
+        else if res.message instanceof TopicMessage
+            type = 'topic'
         else
             return
         date = new Tempus()
