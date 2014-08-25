@@ -113,7 +113,7 @@ module.exports = (robot) ->
     log_response = (room,strings...) ->
         for string in strings
             date = new Tempus()
-            log_message(logs_root,date,'text',room,{ 'messages' : string , 'user' : robot.name })
+            log_message(logs_root,date,'text',room,{ 'message' : string , 'user' : robot.name })
 
     response_orig =
         send: robot.Response.prototype.send
