@@ -110,21 +110,21 @@ module.exports = (robot) ->
 
     #Override send methods in the Response protyoep so taht we can log hubot's replies
     #This is kind of evil,but there doesn't appear to be a better way
-    log_response = (room,string...) ->
+    log_response = (room,strings...) ->
         for string in strings
             date = new Tempus()
-            log_message(logs_root,data,'text',room,{ 'messages' : string , 'user' : robot.name })
+            log_message(logs_root,date,'text',room,{ 'messages' : string , 'user' : robot.name })
 
     response_orig =
         send: robot.Response.prototype.send
         reply: robot.Response.prototype.reply
 
     robot.Response.prototype.send = (strings...) ->
-        log_response @message.user.room,strings...
+        log_response @message.room, strings...
         response_orig.send.call @,strings...
 
     robot.Response.prototype.reply = (strings...) ->
-        log_response @message.user.room,strings...
+        log_response @message.room, strings...
         response_orig.reply.call @,strings...
 
     #init app
