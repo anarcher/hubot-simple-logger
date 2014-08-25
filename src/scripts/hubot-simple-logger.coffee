@@ -104,7 +104,25 @@ module.exports = (robot) ->
     # Add a listener that matches all messages and calls log_message with redis and robot instances and a Response object
     robot.listeners.push new Listener(robot, ((msg) -> return true), (res) -> _log_message(res))
 
-    
+    #Override send methods in the Response protyoep so taht we can log hubot's replies
+    #This is kind of evil,but there doesn't appear to be a better way
+    log_response = (room,string...) ->
+        for string in strings
+            date = new Tempus()
+            log_message(logs_root,data,'text',room,{ 'messages' : string , 'user' : robot.name })
+
+    response_orig =
+        send: robot.Response.prototype.send
+        reply: robot.Response.prototype.reply
+
+    robot.Response.prototype.send = (strings...) ->
+        log_response @message.user.room,strings...
+        response_orig.send.call @,strings...
+
+    robot.Response.prototype.reply = (strings...) ->
+        log_response @message.user.room,strings...
+        response_orig.reply.call @,strings...
+
     #init app
     port = process.env.LOGS_PORT || 8086
     robot.logger_app = express()
