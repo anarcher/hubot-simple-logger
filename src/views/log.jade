@@ -35,7 +35,7 @@ block body
                 !{nbsp}
             - if (event.type == 'text')
               td.nick= '<' + event.user + '>'
-              td.content= event.message
+              td.content= Autolinker.link(event.message,{ newWindow : true , truncate: 25 })
             - if (event.type == 'join')
               td.nick= '<' + event.user + '>'
               td.content= 'joined'
