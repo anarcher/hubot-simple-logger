@@ -35,7 +35,10 @@ block body
                 !{nbsp}
             - if (event.type == 'text')
               td.nick= '<' + event.user + '>'
-              td.content= event.message
+              - if(event.message)
+                    td.content!= Autolinker.link(event.message,{ newWindow : true })
+                else
+                    td.content=''
             - if (event.type == 'join')
               td.nick= '<' + event.user + '>'
               td.content= 'joined'
@@ -44,5 +47,5 @@ block body
               td.content= 'quit'
             - if (event.type == 'topic')
               td.nick= '* '+ event.user 
-              td.content= 'topic: ' + Autolinker.link(event.message,{ newWindow : true })
+              td.content= 'topic: ' + event.message
 
