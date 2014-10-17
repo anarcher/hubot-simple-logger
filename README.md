@@ -1,4 +1,5 @@
 # hubot simple logger
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/anarcher/hubot-simple-logger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 hubot-simple-logger is message file logger and simple web interface
 
