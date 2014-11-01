@@ -7,6 +7,7 @@ util = require "util"
 Tempus = require "Tempus"
 mkdirp = require("mkdirp").sync
 Autolinker = require("autolinker")
+Convert = require('ansi-to-html')
 
 log_streams = {}
 
@@ -20,8 +21,21 @@ log_message = (root,date,type,channel,meta) ->
         if err
             throw err
 
+escapeHtml = (text) ->
+  map =
+    "&": "&amp;"
+    "<": "&lt;"
+    ">": "&gt;"
+    "\"": "&quot;"
+    "'": "&#039;"
+
+  text.replace /[&<>"']/g, (m) ->
+    map[m]
+
+
 render_log = (req,res,channel,file,date,dates,latest) ->
     stream = fs.createReadStream(file,{ encoding: 'utf8' })
+    convert = new Convert({newLine: true, fg: 'black', bg: 'white'})
     buffer = ''
     events = []
     pad2 = (n) ->
@@ -53,6 +67,11 @@ render_log = (req,res,channel,file,date,dates,latest) ->
             event.date = new Tempus(event.date)
             event.time = event.date.toString("%H:%M:%S")
             event.timestamp = event.date.toString("%H:%M:%S:%L")
+            event.message = escapeHtml  event.message
+            event.message = event.message.replace(/\r\n|\r|\n/g, "<br/>")
+            event.message = convert.toHtml event.message
+
+            console.log event.message
             continue unless event.date?
 
             events.push(event)
