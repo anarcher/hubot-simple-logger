@@ -70,8 +70,6 @@ render_log = (req,res,channel,file,date,dates,latest) ->
             event.message = escapeHtml  event.message
             event.message = event.message.replace(/\r\n|\r|\n/g, "<br/>")
             event.message = convert.toHtml event.message
-
-            console.log event.message
             continue unless event.date?
 
             events.push(event)
