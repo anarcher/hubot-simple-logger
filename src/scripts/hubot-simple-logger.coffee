@@ -67,9 +67,12 @@ render_log = (req,res,channel,file,date,dates,latest) ->
             event.date = new Tempus(event.date)
             event.time = event.date.toString("%H:%M:%S")
             event.timestamp = event.date.toString("%H:%M:%S:%L")
-            event.message = escapeHtml  event.message
-            event.message = event.message.replace(/\r\n|\r|\n/g, "<br/>")
-            event.message = convert.toHtml event.message
+
+            if event.message?
+                event.message = escapeHtml  event.message
+                event.message = event.message.replace(/\r\n|\r|\n/g, "<br/>")
+                event.message = convert.toHtml event.message
+
             continue unless event.date?
 
             events.push(event)
