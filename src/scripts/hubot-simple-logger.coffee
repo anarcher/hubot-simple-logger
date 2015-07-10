@@ -69,7 +69,15 @@ render_log = (req,res,channel,file,date,dates,latest) ->
             event.timestamp = event.date.toString("%H:%M:%S:%L")
 
             if event.message?
-                event.message = escapeHtml  event.message
+                try
+                    event.message = escapeHtml  event.message
+                catch error
+                    # Do not process event.messages that aren't text strings,
+                    # just log them. Alternatively, one could call:
+                    # event.message = escapeHtml JSON.stringify(event.message)
+                    debugmsg = JSON.stringify event.message
+                    console.log "message is not text: #{debugmsg}"
+                    continue
                 event.message = event.message.replace(/\r\n|\r|\n/g, "<br/>")
                 event.message = convert.toHtml event.message
 
