@@ -131,7 +131,11 @@ module.exports = (robot) ->
         date = new Tempus()
         room = res.message.user.room || 'general'
         user = res.message.user.name || res.message.user.id || 'unknown'
-        log_message(logs_root,date,type,room,{ 'message' : res.message.text , 'user' : user })
+        if res.message.user.room?
+            log_message(logs_root,date,type,room,{ 'message' : res.message.text , 'user' : user })
+        else
+            robot.logger.debug "Private message: #{res.message.text} will not show in logs."
+            return
 
     # Add a listener that matches all messages and calls log_message with redis and robot instances and a Response object
     robot.listeners.push new Listener(robot, ((msg) -> return true), (res) -> _log_message(res))
