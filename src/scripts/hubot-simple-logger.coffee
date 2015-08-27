@@ -148,7 +148,9 @@ module.exports = (robot) ->
         reply: robot.Response.prototype.reply
 
     robot.Response.prototype.send = (strings...) ->
-        log_response @message.room, strings...
+
+        if not @message.room == null
+            log_response @message.room, strings...
         response_orig.send.call @,strings...
 
     robot.Response.prototype.reply = (strings...) ->
