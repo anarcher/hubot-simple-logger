@@ -12,14 +12,15 @@ Convert = require('ansi-to-html')
 log_streams = {}
 
 log_message = (root,date,type,channel,meta) ->
-    mkdirp(path.resolve root,channel)
-    log_file = path.resolve root,channel,date.toString("%Y-%m-%d") + '.txt'
-    meta.date = date
-    meta.channel = channel
-    meta.type = type
-    fs.appendFile log_file,JSON.stringify(meta) + '\n',(err) ->
-        if err
-            throw err
+    if channel?
+        mkdirp(path.resolve root,channel)
+        log_file = path.resolve root,channel,date.toString("%Y-%m-%d") + '.txt'
+        meta.date = date
+        meta.channel = channel
+        meta.type = type
+        fs.appendFile log_file,JSON.stringify(meta) + '\n',(err) ->
+            if err
+                throw err
 
 escapeHtml = (text) ->
   map =
@@ -69,7 +70,15 @@ render_log = (req,res,channel,file,date,dates,latest) ->
             event.timestamp = event.date.toString("%H:%M:%S:%L")
 
             if event.message?
-                event.message = escapeHtml  event.message
+                try
+                    event.message = escapeHtml  event.message
+                catch error
+                    # Do not process event.messages that aren't text strings,
+                    # just log them. Alternatively, one could call:
+                    # event.message = escapeHtml JSON.stringify(event.message)
+                    debugmsg = JSON.stringify event.message
+                    console.log "message is not text: #{debugmsg}"
+                    continue
                 event.message = event.message.replace(/\r\n|\r|\n/g, "<br/>")
                 event.message = convert.toHtml event.message
 
@@ -123,7 +132,11 @@ module.exports = (robot) ->
         date = new Tempus()
         room = res.message.user.room || 'general'
         user = res.message.user.name || res.message.user.id || 'unknown'
-        log_message(logs_root,date,type,room,{ 'message' : res.message.text , 'user' : user })
+        if res.message.user.room?
+            log_message(logs_root,date,type,room,{ 'message' : res.message.text , 'user' : user })
+        else
+            robot.logger.debug "ignoring private message: #{res.message.text}"
+            return
 
     # Add a listener that matches all messages and calls log_message with redis and robot instances and a Response object
     robot.listeners.push new Listener(robot, ((msg) -> return true), (res) -> _log_message(res))
@@ -140,10 +153,16 @@ module.exports = (robot) ->
         reply: robot.Response.prototype.reply
 
     robot.Response.prototype.send = (strings...) ->
-        log_response @message.room, strings...
+        robot.logger.debug "Logging response.send"
+        if not @message.room == null
+            log_response @message.room, strings...
+        else
+            robot.logger.debug "Response.send has room: null"
+            log_response @message.room, strings...
         response_orig.send.call @,strings...
 
     robot.Response.prototype.reply = (strings...) ->
+        robot.logger.debug "Logging response.reply"
         log_response @message.room, strings...
         response_orig.reply.call @,strings...
 
