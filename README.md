@@ -3,7 +3,7 @@
 hubot-simple-logger is message file logger and simple web interface
 
 
-## 0.0.11 (pre-release)
+## 0.0.11 
 
 - it handles missing text in logs
 - it also handles private messages on irc (msg hubot and get your reply in a private channel)
