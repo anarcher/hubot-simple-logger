@@ -1,4 +1,4 @@
-# hubot simple logger
+# hubot simple logger  [![npm version](https://badge.fury.io/js/hubot-simple-logger.svg)](http://badge.fury.io/js/hubot-simple-logger)
 
 hubot-simple-logger is message file logger and simple web interface
 
