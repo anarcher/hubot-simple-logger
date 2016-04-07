@@ -128,6 +128,7 @@ module.exports = (robot) ->
         else if res.message instanceof TopicMessage
             type = 'topic'
         else
+            robot.logger.debug "unknown message type"
             return
         date = new Tempus()
         room = res.message.user.room || 'general'
@@ -143,6 +144,7 @@ module.exports = (robot) ->
 
     #Override send methods in the Response protyoep so taht we can log hubot's replies
     #This is kind of evil,but there doesn't appear to be a better way
+    # also override hubot's messageRoom so that it is logged
     log_response = (room,strings...) ->
         for string in strings
             date = new Tempus()
@@ -151,10 +153,12 @@ module.exports = (robot) ->
     response_orig =
         send: robot.Response.prototype.send
         reply: robot.Response.prototype.reply
+        messageRoom: Robot.prototype.messageRoom
 
     robot.Response.prototype.send = (strings...) ->
         robot.logger.debug "Logging response.send"
         if not @message.room == null
+            robot.logger.debug "Response has room #{@message.room}"
             log_response @message.room, strings...
         else
             robot.logger.debug "Response.send has room: null"
@@ -162,9 +166,15 @@ module.exports = (robot) ->
         response_orig.send.call @,strings...
 
     robot.Response.prototype.reply = (strings...) ->
-        robot.logger.debug "Logging response.reply"
+        robot.logger.debug "Logging response.reply: "
         log_response @message.room, strings...
         response_orig.reply.call @,strings...
+
+    Robot.prototype.messageRoom = (strings...) ->
+        robot.logger.debug "Logging messageRoom"
+        robot.logger.debug strings...
+        log_response strings...
+        response_orig.messageRoom.call @,strings...
 
     #init app
     port = process.env.LOGS_PORT || 8086
