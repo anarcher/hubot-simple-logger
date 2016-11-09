@@ -177,7 +177,7 @@ module.exports = (robot) ->
         response_orig.messageRoom.call @,strings...
 
     #init app
-    port = process.env.LOGS_PORT || 8086
+    port = process.env.HUBOT_LOGS_PORT || process.env.LOGS_PORT || 8086
     robot.logger_app = express()
     robot.logger_app.configure( ->
         robot.logger_app.set 'views', __dirname + '/../views'
